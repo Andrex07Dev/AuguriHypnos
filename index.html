@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corsa Stradale</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            touch-action: manipulation;
+        }
+        .game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .road {
+            position: absolute;
+            width: 300%;
+            height: 100%;
+            background-image: url('/static/images/road.jpg');
+            background-repeat: repeat-x;
+            background-size: auto 100%;
+            background-position: 0 0;
+        }
+        .car {
+            position: absolute;
+            width: 350px;
+            height: 230px;
+            background-image: url('/static/images/car.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            bottom: 15%;
+            left: 50%;
+            transform: translateX(-50%) scaleX(-1); /* Orientamento iniziale verso destra */
+            z-index: 100;
+            transition: transform 0.4s ease;
+        }
+        .controls {
+            position: absolute;
+            width: 100%;
+            bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 30px;
+            box-sizing: border-box;
+            z-index: 20;
+        }
+        .control-btn {
+            width: 80px;
+            height: 80px;
+            cursor: pointer;
+            transition: transform 0.1s;
+            border: none;
+            background-color: transparent;
+            padding: 0;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .control-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .control-btn:active {
+            transform: scale(0.85);
+        }
+        @media (max-width: 768px) {
+            .car {
+                width: 250px;
+                height: 150px;
+                bottom: 20%;
+            }
+            .controls {
+                bottom: 20px;
+                padding: 0 20px;
+            }
+            .control-btn {
+                width: 70px;
+                height: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="road" id="road"></div>
+        <div class="car" id="car"></div>
+        <div class="controls">
+            <button class="control-btn" id="changeCarBtn">
+                <img src="/static/images/change_car.png" alt="Cambia Macchina">
+            </button>
+            <button class="control-btn" id="accelerateBtn">
+                <img src="/static/images/button.png" alt="Accelera">
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Configurazione del gioco
+        const road = document.getElementById('road');
+        const car = document.getElementById('car');
+        const accelerateBtn = document.getElementById('accelerateBtn');
+        const changeCarBtn = document.getElementById('changeCarBtn');
+        
+        // Stato del gioco
+        let speed = 0;
+        let roadPosition = 0;
+        let animationId;
+        const carModels = ['car.png', 'car2.png', 'car3.png'];
+        let currentCarIndex = 0;
+        const boostSpeed = 5;
+
+        // Animazione principale
+        function gameLoop() {
+            if(speed > 0) {
+                roadPosition -= speed;
+                road.style.backgroundPosition = `${roadPosition}px 0`;
+            }
+            animationId = requestAnimationFrame(gameLoop);
+        }
+
+        // Cambio macchina con effetto flip
+        function changeVehicle() {
+            // 1. Prima ruota la macchina di 180° sull'asse Y (effetto flip)
+            car.style.transform = 'translateX(-50%) scaleX(1)';
+            
+            // 2. Dopo metà animazione, cambia l'immagine
+            setTimeout(() => {
+                currentCarIndex = (currentCarIndex + 1) % carModels.length;
+                car.style.backgroundImage = `url('/static/images/${carModels[currentCarIndex]}')`;
+                
+                // 3. Riporta l'orientamento verso destra
+                setTimeout(() => {
+                    car.style.transform = 'translateX(-50%) scaleX(-1)';
+                }, 50);
+            }, 200);
+        }
+
+        // Gestione accelerazione
+        function startAccelerating() {
+            speed = boostSpeed;
+        }
+
+        function stopAccelerating() {
+            speed = 0;
+        }
+
+        // Inizializzazione
+        function initGame() {
+            // Avvia loop di gioco
+            gameLoop();
+            
+            // Eventi pulsante accelerazione
+            accelerateBtn.addEventListener('mousedown', startAccelerating);
+            accelerateBtn.addEventListener('touchstart', startAccelerating);
+            accelerateBtn.addEventListener('mouseup', stopAccelerating);
+            accelerateBtn.addEventListener('touchend', stopAccelerating);
+            accelerateBtn.addEventListener('mouseleave', stopAccelerating);
+            
+            // Eventi pulsante cambio macchina
+            changeCarBtn.addEventListener('click', changeVehicle);
+            changeCarBtn.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                changeVehicle();
+            });
+
+            // Gestione focus finestra
+            window.addEventListener('blur', () => {
+                cancelAnimationFrame(animationId);
+                speed = 0;
+            });
+            
+            window.addEventListener('focus', () => {
+                if (!animationId) {
+                    gameLoop();
+                }
+            });
+        }
+
+        // Avvia il gioco
+        initGame();
+    </script>
+</body>
+</html>
