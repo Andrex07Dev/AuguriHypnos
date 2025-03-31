@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Corsa Stradale</title>
+    <title>Auguri hypnos</title>
     <style>
         body {
             margin: 0;
@@ -22,7 +22,7 @@
             position: absolute;
             width: 300%;
             height: 100%;
-            background-image: url('/static/images/road.jpg');
+            background-image: url('road.jpg');
             background-repeat: repeat-x;
             background-size: auto 100%;
             background-position: 0 0;
@@ -31,7 +31,7 @@
             position: absolute;
             width: 350px;
             height: 230px;
-            background-image: url('/static/images/car.png');
+            background-image: url('car.png');
             background-size: contain;
             background-repeat: no-repeat;
             bottom: 15%;
@@ -92,10 +92,10 @@
         <div class="car" id="car"></div>
         <div class="controls">
             <button class="control-btn" id="changeCarBtn">
-                <img src="/static/images/change_car.png" alt="Cambia Macchina">
+                <img src="change_car.png" alt="Cambia Macchina">
             </button>
             <button class="control-btn" id="accelerateBtn">
-                <img src="/static/images/button.png" alt="Accelera">
+                <img src="button.png" alt="Accelera">
             </button>
         </div>
     </div>
@@ -132,7 +132,7 @@
             // 2. Dopo metà animazione, cambia l'immagine
             setTimeout(() => {
                 currentCarIndex = (currentCarIndex + 1) % carModels.length;
-                car.style.backgroundImage = `url('/static/images/${carModels[currentCarIndex]}')`;
+                car.style.backgroundImage = `url('${carModels[currentCarIndex]}')`;
                 
                 // 3. Riporta l'orientamento verso destra
                 setTimeout(() => {
